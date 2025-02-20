@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="pos_receipt_screen.receiptscreen" t-inherit="point_of_sale.ReceiptHeader" t-inherit-mode="extension">
+        <xpath expr="//div[@class='fw-bolder' and contains(@t-if, 'props.data.trackingNumber')]" position="replace"/>
+        <xpath expr="//div[@class='pos-receipt-contact']" position="after">
+            <t t-if="props.data.partner">
+                <br/>
+                <div class="pos-receipt-center-align">
+                    <div>Nom du client : <t t-esc="props.data.partner.name"/></div>
+                    <!--
+                    <t t-if="props.data.default_code">
+                        <div style="font-weight: bold; text-align: center;">correct Code: <t t-esc="props.data.default_code" /></div>
+                    </t>-->
+                </div>
+            </t>
+            <br/>
+            <br/>
+        </xpath>
+        <!--
+        <xpath expr="//t[@t-set='line']" position="after">
+            <div t-if="line.default_code" class="product-default-code">
+                <small>Code: <t t-esc="line.default_code" /></small>
+            </div>
+        </xpath>
+        -->
+    </t>
+</templates>
