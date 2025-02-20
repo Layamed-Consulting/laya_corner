@@ -7,7 +7,7 @@ from odoo.http import request
 ODOO_URL = 'http://135.125.204.41:10018'
 ODOO_DB = 'ChicCorner_Prod'
 ODOO_USERNAME = 'mehdi.benjebara@outlook.com'
-
+ODOO_PASSWORD = 'admin*admin'
 
 class ProductAPI(http.Controller):
 
@@ -15,21 +15,21 @@ class ProductAPI(http.Controller):
     def get_product_details(self, **kwargs):
         try:
             # Get the API key from the Authorization header
-            api_key = request.httprequest.headers.get('Authorization')
+            #api_key = request.httprequest.headers.get('Authorization')
 
             # Check if the API key is provided
-            if not api_key:
-                return http.Response(
-                    json.dumps({'error': 'API key is missing in the request header'}),
-                    status=403, content_type='application/json'
-                )
+            #if not api_key:
+             #   return http.Response(
+              #      json.dumps({'error': 'API key is missing in the request header'}),
+               #     status=403, content_type='application/json'
+                #)
 
             # Use XML-RPC to search for the API key in the correct database
             common = xmlrpc.client.ServerProxy(f'{ODOO_URL}/xmlrpc/2/common')
-            uid = common.authenticate(ODOO_DB, ODOO_USERNAME, api_key, {})
+            uid = common.authenticate(ODOO_DB, ODOO_USERNAME, ODOO_PASSWORD, {})
             if not uid:
                 return http.Response(
-                    json.dumps({'error': 'Unauthorized, invalid or inactive API key'}),
+                    json.dumps({'error': 'username and password not prrovide'}),
                     status=403, content_type='application/json'
                 )
 
@@ -37,7 +37,7 @@ class ProductAPI(http.Controller):
 
             # Fetch product details
             products = models.execute_kw(
-                ODOO_DB, uid, api_key, 'product.template', 'search_read',
+                ODOO_DB, uid, ODOO_PASSWORD, 'product.template', 'search_read',
                 [[]],
                 {'fields': [
                     'name', 'barcode', 'default_code', 'x_studio_item_id',
@@ -54,7 +54,7 @@ class ProductAPI(http.Controller):
 
                 # Fetch supplier information for the product
                 suppliers = models.execute_kw(
-                    ODOO_DB, uid, api_key, 'product.supplierinfo', 'search_read',
+                    ODOO_DB, uid, ODOO_PASSWORD, 'product.supplierinfo', 'search_read',
                     [[('product_tmpl_id', '=', product['id'])]],
                     {'fields': ['display_name', 'price', 'currency_id']}
                 )
@@ -71,7 +71,7 @@ class ProductAPI(http.Controller):
 
                 # Fetch stock data for the product
                 stock_records = models.execute_kw(
-                    ODOO_DB, uid, api_key, 'stock.quant', 'search_read',
+                    ODOO_DB, uid, ODOO_PASSWORD, 'stock.quant', 'search_read',
                     [[('product_id.product_tmpl_id', '=', product['id'])]],
                     {'fields': ['location_id', 'quantity']}
                 )
@@ -84,7 +84,7 @@ class ProductAPI(http.Controller):
 
                 # Fetch product price from pricelist
                 pricelist_items = models.execute_kw(
-                    ODOO_DB, uid, api_key, 'product.pricelist.item', 'search_read',
+                    ODOO_DB, uid, ODOO_PASSWORD, 'product.pricelist.item', 'search_read',
                     [[('product_tmpl_id', '=', product['id'])]],
                     {'fields': ['fixed_price']}
                 )
