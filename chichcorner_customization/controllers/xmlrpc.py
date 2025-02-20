@@ -4,7 +4,7 @@ import json
 from odoo.http import request
 
 
-ODOO_URL = 'http://135.125.204.41:10018'
+ODOO_URL = 'http://135.125.204.41:8069'
 ODOO_DB = 'ChicCorner_Prod'
 ODOO_USERNAME = 'mehdi.benjebara@outlook.com'
 ODOO_PASSWORD = 'admin*admin'
