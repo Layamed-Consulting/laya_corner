@@ -116,3 +116,46 @@ class ProductAPI(http.Controller):
 
         except Exception as e:
             return http.Response(json.dumps({'error': str(e)}), status=500, content_type='application/json')
+
+
+class MultiDBAPI(http.Controller):
+
+    @http.route('/api/get_databases', auth="public", type='http', methods=['GET'], csrf=False)
+    def list_databases(self):
+        """ Return a list of all available databases """
+        db_list = http.db_list()  # Fetch all databases in the instance
+        response_data = {'databases': db_list}
+
+        # Return response as JSON
+        return request.make_json_response(response_data)
+
+    @http.route('/api/get_products', auth="public", type='http', methods=['GET'], csrf=False)
+    def get_products(self, **kwargs):
+        """ Fetch product names from a selected database """
+        try:
+            db = kwargs.get('db')  # Database name from request
+            username = kwargs.get('login')  # User login
+            password = kwargs.get('password')  # User password
+
+            if not db or not username or not password:
+                return request.make_json_response({'error': 'Missing parameters (db, login, password)'}, status=400)
+
+            # Authenticate in the selected database
+            request.session.db = db
+            uid = request.session.authenticate(db, username, password)
+
+            if not uid:
+                return request.make_json_response({'error': 'Authentication failed'}, status=401)
+
+            # Fetch Product Names
+            products = request.env['product.template'].sudo().search([])
+            product_list = [{'id': prod.id, 'name': prod.name} for prod in products]
+
+            return request.make_json_response({
+                'status': 'success',
+                'database': db,
+                'products': product_list
+            })
+
+        except Exception as e:
+            return request.make_json_response({'error': str(e)}, status=500)
