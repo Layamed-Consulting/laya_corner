@@ -79,7 +79,6 @@ async function printAttachment(env, action) {
                 newWindow.document.write(modifiedHtml);
                 newWindow.document.close();
                 newWindow.print();
-
                 return;
             }
 
