@@ -66,7 +66,50 @@ async function printAttachment(env, action) {
                     ${reportHtml}
                 </div>
             `;
+            if (isAndroid) {
+                console.log("Android detected");
 
+                const iframe = document.createElement("iframe");
+                iframe.style.position = "fixed";
+                iframe.style.top = "0";
+                iframe.style.left = "0";
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
+                iframe.style.zIndex = "9999";
+                iframe.style.visibility = "hidden";
+
+                document.body.appendChild(iframe);
+
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(modifiedHtml);
+                iframeDoc.close();
+
+                iframe.style.visibility = "visible";
+                setTimeout(() => {
+                    iframe.contentWindow.print();
+                }, 500);
+
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    window.location = "/web#action=stock_barcode.stock_barcode_action_main_menu";
+                }, 2000)
+            } else {
+                console.log("Android detected: Opening report in a new tab.");
+                const newWindow = window.open("", "_blank");
+                if (!newWindow) {
+                    console.warn("Popup blocked! Enable popups to print automatically.");
+                    return;
+                }
+
+                newWindow.document.open();
+                newWindow.document.write(modifiedHtml);
+                newWindow.document.close();
+                newWindow.print();
+                return;
+            }
+            /*
             if (isAndroid) {
                 console.log("Android detected: Opening report in a new tab.");
                 const newWindow = window.open("", "_blank");
@@ -109,6 +152,8 @@ async function printAttachment(env, action) {
                     }
                 }, 1000);
             };
+
+             */
         } else {
             throw new Error("Report HTML content not provided or invalid");
         }
