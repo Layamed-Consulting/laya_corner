@@ -77,6 +77,7 @@ class DimensionProduitAPI(http.Controller):
                     stock_quantities[location_name] = stock.quantity
 
                 produit_data.append({
+                    "Id du produit": product.id,
                     "Nom du Produit": product.name,
                     "Code barre": product.barcode,
                     "default code": product.default_code,
@@ -172,10 +173,11 @@ class PosOrderAPI(http.Controller):
                     "Ref": order.name,
                     "Session": order.session_id.id if order.session_id else "None",
                     "Date de commande": order.date_order,
-                    #"Magasin": order.config_id.id if order.config_id else None,
+                    "Id Magasin": order.config_id.id if order.config_id else None,
                     "Nom du Magasin": order.config_id.name if order.config_id else "None",# ID du magasin
+                    "Id Ticket": order.id,
                     "Ticket de caisse": order.pos_reference,
-                    #"Client id": order.partner_id.id if order.partner_id else None,  # ID du client
+                    "Id Client": order.partner_id.id if order.partner_id else None,  # ID du client
                     "Nom du client": order.partner_id.name if order.partner_id else "",
                     "Caissier": order.employee_id.name if order.employee_id else "",
                     "Nom du vendeur": order.suggestion if order.suggestion else "",
